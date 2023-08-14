@@ -62,17 +62,15 @@ def home():
             f"/api/v1.0/precipitation <br />"
             f"/api/v1.0/stations <br />"
             f"/api/v1.0/tobs <br />"
-            f"/api/v1.0/&lt;start&gt; and /api/v1.0/&lt;start&gt;/&lt;end&gt;<br />")
+            f"/api/v1.0/&lt;start&gt; and /api/v1.0/&lt;start&gt;/&lt;end&gt; (Specify date(s) in following format: YYYY-MM-DD)<br />")
 
 @app.route("/api/v1.0/precipitation")
 def precipitation():
    
-  
    # Get last date using our helper function
    last_date=get_one_year_old_date()
 
    # Query to retrieve the date and precipitation scores
-   
    start_session()
    results=session.query(Measurement.date,Measurement.prcp).filter(Measurement.date>=last_date).all()
    close_session()
@@ -126,6 +124,7 @@ def tobs():
 
     return jsonify(rows)
 
+# Code to handle routes /api/v1.0/<start> and /api/v1.0/<start>/<end>
 @app.route("/api/v1.0/<start>")
 @app.route("/api/v1.0/<start>/<end>")
 def start_end_temperature_data(start, end = None):
@@ -143,7 +142,6 @@ def start_end_temperature_data(start, end = None):
     else:
 
         # Converting end date into datetime variable
-
         end_date = dt.datetime.strptime(end, '%Y-%m-%d').date()
         results = session.query(*active_station_list).filter(Measurement.date>=start_date).filter(Measurement.date<=end_date).all()
     
